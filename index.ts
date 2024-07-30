@@ -1,8 +1,13 @@
+import { Socket } from "socket.io";
+
+require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-require("dotenv").config();
+const { Server } = require("socket.io");
+const { updateFriendList } = require("./utils/updateFriendsList");
+const { updateOnlineStatus } = require("./utils/updateOnlineStatus");
 
 const app = express();
 app.use(
@@ -17,10 +22,6 @@ app.use(bodyParser.json());
 
 const server = http.createServer(app);
 
-import { Server } from "socket.io";
-import { updateFriendList } from "./utils/updateFriendsList";
-import { updateOnlineStatus } from "./utils/updateOnlineStatus";
-
 const io = new Server(server, {
   cors: {
     origin: process.env.URL || "http://localhost:3000",
@@ -32,7 +33,7 @@ const io = new Server(server, {
 let activeUsers: Record<string, { username: string; socketId: string }> = {};
 let socketToUserMap: Record<string, { userId: string }> = {};
 
-io.on("connection", (socket) => {
+io.on("connection", (socket: Socket) => {
   console.log("A user has connected", socket.id);
 
   socket.on("new-user-add", async (newUserId, username) => {
