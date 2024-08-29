@@ -91,8 +91,25 @@ io.on("connection", (socket: Socket) => {
     socket.join(channelId);
   });
 
-  socket.on("send-message", (channelId) => {
+  socket.on("mark-messages-as-read", (userId: string) => {
+    const userSocket = activeUsers[userId];
+
+    if (userSocket)
+      io.to(userSocket.socketId).emit("message-read-confirmation");
+  });
+
+  socket.on("send-message", (channelId, membersIds?: string[]) => {
     io.to(channelId).emit("received-message");
+
+    if (membersIds) {
+      membersIds.forEach((memberId) => {
+        const memberSocket = activeUsers[memberId];
+
+        if (memberSocket) {
+          io.to(memberSocket.socketId).emit("receive-unread-messages");
+        }
+      });
+    }
   });
 
   socket.on(
