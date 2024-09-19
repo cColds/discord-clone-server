@@ -99,7 +99,7 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("send-message", (channelId, membersIds?: string[]) => {
-    io.to(channelId).emit("received-message");
+    socket.broadcast.to(channelId).emit("received-message");
 
     if (membersIds) {
       membersIds.forEach((memberId) => {
