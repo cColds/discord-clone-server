@@ -130,19 +130,24 @@ io.on("connection", (socket: Socket) => {
     io.to(channelId).emit("create-channel");
   });
 
-  socket.on("join-server", (userId) => {
+  socket.on("join-server", (userId, memberIds) => {
     const user = activeUsers[userId];
-    if (user.socketId) {
+    if (user?.socketId) {
       io.to(user.socketId).emit("join-server");
     } else {
       console.log("Could not find user socket id", user);
     }
+
+    memberIds.forEach((memberId: string) => {
+      const memberSocket = activeUsers[memberId];
+      io.to(memberSocket.socketId).emit("user-joined-server");
+    });
   });
 
   socket.on("create-server", (userId) => {
     const user = activeUsers[userId];
 
-    if (user.socketId) {
+    if (user?.socketId) {
       io.to(user.socketId).emit("create-server");
     } else {
       console.log("Could not find user socket id", user);
