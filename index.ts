@@ -154,6 +154,19 @@ io.on("connection", (socket: Socket) => {
     }
   });
 
+  socket.on("update-server", (memberIds) => {
+    memberIds.forEach((memberId: string) => {
+      const memberSocket = activeUsers[memberId];
+      io.to(memberSocket.socketId).emit("update-server");
+    });
+  });
+
+  socket.on("leave-server", (userId) => {
+    const user = activeUsers[userId];
+
+    io.to(user.socketId).emit("leave-server");
+  });
+
   socket.on("update-dms-list", (recipientId, senderId) => {
     const senderSocket = activeUsers[senderId];
     const recipientSocket = activeUsers[recipientId];
