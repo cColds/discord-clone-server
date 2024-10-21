@@ -22,12 +22,12 @@ export function updateFriendList({
   const recipient = activeUsers[recipientId];
 
   if (sender) {
-    io.to(sender.socketId).emit("update-friend-list");
+    io.to(sender.socketId).emit("update-user");
     console.log(`Emitted to sender ${sender.socketId}`);
   }
 
   if (recipient) {
-    io.to(recipient.socketId).emit("update-friend-list");
+    io.to(recipient.socketId).emit("update-user");
     console.log(`Emitted to recipient ${recipient.socketId}`);
   }
 }

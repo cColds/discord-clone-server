@@ -61,7 +61,7 @@ io.on("connection", (socket: Socket) => {
     user.social.friends.forEach((friendId: string) => {
       const friend = activeUsers[friendId];
       if (friend) {
-        socket.to(friend.socketId).emit("update-friends-online-status", true);
+        socket.to(friend.socketId).emit("update-user", true);
       }
     });
   });
@@ -87,7 +87,6 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("join-channel", (channelId) => {
-    console.log("joining channel", channelId);
     socket.join(channelId);
   });
 
@@ -127,13 +126,13 @@ io.on("connection", (socket: Socket) => {
   );
 
   socket.on("create-channel", (channelId) => {
-    io.to(channelId).emit("create-channel");
+    io.to(channelId).emit("update-server");
   });
 
   socket.on("join-server", (userId, memberIds) => {
     const user = activeUsers[userId];
     if (user?.socketId) {
-      io.to(user.socketId).emit("join-server");
+      io.to(user.socketId).emit("update-server");
     } else {
       console.log("Could not find user socket id", user);
     }
@@ -164,7 +163,7 @@ io.on("connection", (socket: Socket) => {
   socket.on("leave-server", (userId) => {
     const user = activeUsers[userId];
 
-    io.to(user.socketId).emit("leave-server");
+    io.to(user.socketId).emit("update-server");
   });
 
   socket.on("update-dms-list", (recipientId, senderId) => {
@@ -172,11 +171,11 @@ io.on("connection", (socket: Socket) => {
     const recipientSocket = activeUsers[recipientId];
 
     if (recipientSocket) {
-      io.to(recipientSocket.socketId).emit("update-dms-list");
+      io.to(recipientSocket.socketId).emit("update-user");
     }
 
     if (senderSocket) {
-      io.to(senderSocket.socketId).emit("update-dms-list");
+      io.to(senderSocket.socketId).emit("update-user");
     }
   });
 
@@ -197,9 +196,7 @@ io.on("connection", (socket: Socket) => {
         user.social.friends.forEach((friendId: string) => {
           const friend = activeUsers[friendId];
           if (friend) {
-            socket
-              .to(friend.socketId)
-              .emit("update-friends-online-status", false);
+            socket.to(friend.socketId).emit("update-user");
           }
         });
       }
