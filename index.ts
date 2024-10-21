@@ -125,10 +125,6 @@ io.on("connection", (socket: Socket) => {
     }
   );
 
-  socket.on("create-channel", (channelId) => {
-    io.to(channelId).emit("update-server");
-  });
-
   socket.on("join-server", (userId, memberIds) => {
     const user = activeUsers[userId];
     if (user?.socketId) {
@@ -158,12 +154,6 @@ io.on("connection", (socket: Socket) => {
       const memberSocket = activeUsers[memberId];
       io.to(memberSocket.socketId).emit("update-server");
     });
-  });
-
-  socket.on("leave-server", (userId) => {
-    const user = activeUsers[userId];
-
-    io.to(user.socketId).emit("update-server");
   });
 
   socket.on("update-dms-list", (recipientId, senderId) => {
