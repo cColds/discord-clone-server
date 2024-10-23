@@ -133,8 +133,11 @@ io.on("connection", (socket: Socket) => {
       console.log("Could not find user socket id", user);
     }
 
-    memberIds.forEach((memberId: string) => {
+    memberIds?.forEach((memberId: string) => {
       const memberSocket = activeUsers[memberId];
+
+      if (!memberSocket) return;
+
       io.to(memberSocket.socketId).emit("user-joined-server");
     });
   });
@@ -150,8 +153,11 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("update-server", (memberIds) => {
-    memberIds.forEach((memberId: string) => {
+    memberIds?.forEach((memberId: string) => {
       const memberSocket = activeUsers[memberId];
+
+      if (!memberSocket) return;
+
       io.to(memberSocket.socketId).emit("update-server");
     });
   });
